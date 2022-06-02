@@ -78,7 +78,7 @@ class DNN_Model(Model):
             1D numpy array: The output of the model prediction
             list: The classes the predictions belong to
         """
-        #sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
+
         ####################
         # Select the model #
         ####################
@@ -98,7 +98,6 @@ class DNN_Model(Model):
         ############################
         # Select the correct model #
         ############################
-        
         network_fn = nets_factory.get_network_fn(self.model_name,
                                                  num_classes=num_classes_map[self.model_name],
                                                  is_training=False)
@@ -121,23 +120,21 @@ class DNN_Model(Model):
 #                       " of " + str(len(image_path_list)))
                 with open(image_path, 'rb') as f:
                     image = tf.image.decode_jpeg(f.read(), channels=3)
-                
-                inference_imgs.append(image)
-                with tf.device('/gpu:0'):
-                    processed_image = self._preprocess_image(image, network_fn)
-                logits, _ = network_fn(processed_image)
-                inference_probs.append(tf.nn.softmax(logits))
+                    inference_imgs.append(image)
 
-                ######################
-                # Get the checkpoint #
-                ######################
-                init_fn = slim.assign_from_checkpoint_fn(self._weights_path,
+                    processed_image = self._preprocess_image(image, network_fn)
+                    logits, _ = network_fn(processed_image)
+                    inference_probs.append(tf.nn.softmax(logits))
+
+            ######################
+            # Get the checkpoint #
+            ######################
+            init_fn = slim.assign_from_checkpoint_fn(self._weights_path,
                                                      slim.get_variables_to_restore())
 
             #################
             # Run the model #
             #################
-
             with tf.Session() as sess:
                 init_fn(sess)
                 prediction_list = list()
