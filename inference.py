@@ -6,7 +6,6 @@ from model import Model
 from preprocessing import preprocessing_factory
 
 import tensorflow as tf
-import Pyro4
 import analysis
 import os
 
@@ -163,7 +162,6 @@ class DNN_Model(Model):
             return_wrapper.append((average_times, prediction_list, class_list))
         return return_wrapper
 
-@Pyro4.expose
 class DNN_Daemon():
     """
     Class designed to expose the DNNs to the daemon
@@ -248,7 +246,6 @@ class DNN_Daemon():
 
 def main():
 
-    dnn_daemon = DNN_Daemon()
 
     # Set this to the IP address of the thing hosting inference
     HOST_IP = '148.88.227.201'
@@ -259,12 +256,7 @@ def main():
     # the same directory as this file
 
     # Set up daemon to serve inference requests for each model
-    with Pyro4.Daemon(host=HOST_IP) as daemon:
-        dnn_uri = daemon.register(dnn_daemon)
-        with Pyro4.locateNS() as ns:
-            ns.register("artefact.dnn_daemon", dnn_uri)
-        print("DNN Daemon Available.")
-        daemon.requestLoop()
+   
 
 
 if __name__ == '__main__':
